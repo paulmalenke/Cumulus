@@ -236,7 +236,7 @@ MailingCity__c &amp; IF(LEN(MailingCity__c) &gt; 0, &quot;, &quot;, &quot;&quot;
     </fields>
     <fields>
         <fullName>MailingCity__c</fullName>
-        <externalId>false</externalId>
+        <externalId>true</externalId>
         <label>Mailing City</label>
         <length>255</length>
         <required>false</required>
