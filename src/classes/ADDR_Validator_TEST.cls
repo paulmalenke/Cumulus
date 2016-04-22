@@ -233,7 +233,71 @@ public with sharing class ADDR_Validator_TEST {
         System.assertEquals(false, av[0].Verified__c);
         System.assertEquals('Payment required. No active subscription found.', av[0].Verification_Status__c);
     }
-    
+
+    static testMethod void test413() {
+        if (strTestOnly != '*' && strTestOnly != 'test413') return;
+
+        // address validation is async, so no way to successfully test if other related triggers are already async!
+        if (hasAsyncAddrTriggers()) return;
+
+        Addr_Verification_Settings__c settings = createDefaultSettings();
+        Test.setMock(HttpCalloutMock.class, new ADDR_MockHttpRespGenerator_TEST());
+
+        Contact contact = new contact(firstname='Test', lastname='Person');
+        contact.MailingStreet = '413 error';
+        contact.MailingCity = 'chicago';
+        contact.MailingState = 'Illinois';
+        contact.MailingPostalCode = '60606';
+        contact.MailingCountry = 'United States';
+
+        Test.StartTest();
+        insert contact;
+        ADDR_Addresses_TDTM.hasRunAddrTrigger = false;
+        Test.StopTest();
+
+        //check household got created for contact
+        contact = [select Account.Id from Contact where Id = :contact.Id];
+        Id accountId = contact.Account.Id;
+        System.assertNotEquals(null, accountId);
+
+        Address__c[] av = [select Verified__c, Verification_Status__c from Address__c where Household_Account__c = :contact.AccountId];
+        System.assertEquals(1, av.size());
+        System.assertEquals(false, av[0].Verified__c);
+        System.assertEquals('Request Entity Too Large. Request body too large.', av[0].Verification_Status__c);
+    }
+
+    static testMethod void test429() {
+        if (strTestOnly != '*' && strTestOnly != 'test429') return;
+
+        // address validation is async, so no way to successfully test if other related triggers are already async!
+        if (hasAsyncAddrTriggers()) return;
+
+        Addr_Verification_Settings__c settings = createDefaultSettings();
+        Test.setMock(HttpCalloutMock.class, new ADDR_MockHttpRespGenerator_TEST());
+
+        Contact contact = new contact(firstname='Test', lastname='Person');
+        contact.MailingStreet = '429 error';
+        contact.MailingCity = 'chicago';
+        contact.MailingState = 'Illinois';
+        contact.MailingPostalCode = '60606';
+        contact.MailingCountry = 'United States';
+
+        Test.StartTest();
+        insert contact;
+        ADDR_Addresses_TDTM.hasRunAddrTrigger = false;
+        Test.StopTest();
+
+        //check household got created for contact
+        contact = [select Account.Id from Contact where Id = :contact.Id];
+        Id accountId = contact.Account.Id;
+        System.assertNotEquals(null, accountId);
+
+        Address__c[] av = [select Verified__c, Verification_Status__c from Address__c where Household_Account__c = :contact.AccountId];
+        System.assertEquals(1, av.size());
+        System.assertEquals(false, av[0].Verified__c);
+        System.assertEquals('Too Many Requests. Too many requests coming from a given source over too short of a time.', av[0].Verification_Status__c);
+    }
+
     static testMethod void test500() {
         if (strTestOnly != '*' && strTestOnly != 'test500') return;
         

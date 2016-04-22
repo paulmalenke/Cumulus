@@ -149,6 +149,12 @@ public with sharing class ADDR_MockHttpRespGenerator_TEST implements HttpCallout
         } else if (req.getBody().contains('402')) {
             res.setStatusCode(402);
             res.setStatus('Payment required. No active subscription found.');
+        } else if (req.getBody().contains('413')) {
+            res.setStatusCode(413);
+            res.setStatus('Request Entity Too Large. Request body too large.');
+        } else if (req.getBody().contains('429')) {
+            res.setStatusCode(429);
+            res.setStatus('Too Many Requests. Too many requests coming from a given source over too short of a time.');
         } else if (req.getBody().contains('500')) {
             res.setStatusCode(500);
             res.setStatus('Internal server error. General service failure; retry request.');

@@ -116,7 +116,11 @@ public with sharing class ADDR_SmartyStreets_Gateway {
             throw new LiveAddressException('Unauthorized. Authentication failure; invalid credentials.');
         else if(res.getStatusCode() == 402)
             throw new LiveAddressException('Payment required. No active subscription found.');
-        else if(res.getStatusCode() == 500)
+        else if(res.getStatusCode() == 413)
+            throw new LiveAddressException('Request Entity Too Large. Request body too large.');
+        else if(res.getStatusCode() == 429)
+            throw new LiveAddressException('Too Many Requests. Too many requests coming from a given source over too short of a time.');
+        else if(res.getStatusCode() >= 500)
             throw new LiveAddressException('Internal server error. General service failure; retry request.');
 
 
